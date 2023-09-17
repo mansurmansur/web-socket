@@ -1,0 +1,136 @@
+*, ::after, ::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  width: 100%;
+  height: 95vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.container{
+  width: 80%;
+  height: 60%;
+}
+.login-form label {
+  margin: 10px;
+  color: blueviolet;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.login-form input {
+  margin: 10px;
+}
+.login-form input[type="text"] {
+  width: 100%;
+  padding: 8px 5px;
+  border: 2px solid blueviolet;
+  border-radius: 5px;
+}
+
+.login-form input[type="button"] {
+  width: 100%;
+  padding: 8px 0;
+  background-color: blueviolet;
+  border: none;
+  color: white;
+  font-weight: 600;
+  border-radius: 5px;
+}
+.login-form input[type="button"]:hover{
+  opacity: .6;
+  cursor:grabbing;
+}
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* chat section */
+.chat-area{
+  width: 350px;
+  padding: 10px;
+  box-shadow: 0 0 5px gray;
+}
+
+.profile-info{
+  height: 40px;
+  width: 100%;
+  background-color: blueviolet;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+}
+.username{
+  color: white;
+  margin-left: 10px;
+  text-transform: capitalize;
+}
+.profile-icon{
+  color: white;
+}
+.previous-chat{
+  width: 100%;
+  height: 300px; 
+  padding: 10px;
+  overflow-y: scroll;
+}
+.chat{
+  color: white;
+  margin: 5px 0;
+  font-size: 14px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+.text{
+  opacity: .7;
+  padding: 5px 10px;
+  background-color: blueviolet;
+  width: -moz-fit-content;
+  width: fit-content;
+  border-radius: 5px;
+}
+.other{
+  justify-content: end;
+}
+.other .text{
+  opacity: 1;
+}
+/* send chat form */
+.chat-form{
+  min-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1.5px solid blueviolet;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+#chat {
+  padding: 8px 5px;
+  width: 80%;
+  border: none;
+  outline: none;
+  color: gray;
+}
+.send-btn{
+  width: 20%;
+  height: auto;
+  padding: 8px 10px;
+  background-color: white;
+  border: none;
+}
+.send-icon{
+  color: blueviolet;
+}
+
