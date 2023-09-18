@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPaperPlane, faUser} from '@fortawesome/free-solid-svg-icons'
-import {socket, sendMessage} from "../socket/socket";
+import {socket, sendMessage} from "../services/socket";
 
 const Chat = (props) => {
   const chatHistorRef = useRef();
@@ -87,28 +87,34 @@ const Chat = (props) => {
     setMessage('')
   }
   return (
-    <div className="container">
-      <div className="active-users">
-        <h4>Active Users</h4>
-        <ul>
-          {activeUsers.map((username) => (
-            <li key={username}>{username}</li>
-          ))}
-        </ul>
+    <div className="container chat-dashboard">
+      <div className="aside-section">
+        <div className="profile-info">
+            <div className="profile">
+            <FontAwesomeIcon icon={faUser} className="profile-icon"/>
+            </div>
+            <p className="username">{searchParams.get('id')}</p>
+        </div>
+        
+        <div className="users">
+          <h3>Users</h3>
+        {!activeUsers.length ? <p>No user online</p> : 
+         <ul>
+           {activeUsers.map((username) => (<li key={username}>{username}</li>))}
+         </ul>
+        }
+        </div>
       </div>
       
+      {/* chat section */}
       <div className="chat-area">
         <div className="profile-info">
+            <div className="profile">
             <FontAwesomeIcon icon={faUser} className="profile-icon"/>
+            </div>
             <p className="username">{searchParams.get('id')}</p>
         </div>
         <div className="previous-chat" ref={chatHistorRef}>
-          {/* <div className="chat">
-            <span className="text">Hi there</span>
-          </div>
-          <div className="chat other">
-             <span className="text">Hi there</span>
-          </div> */}
           {
             chatHistory.map(({sender, text}) => 
               <div className={sender === searchParams.get('id')? "chat" : "chat other"}>
@@ -119,7 +125,7 @@ const Chat = (props) => {
             )
           }
         </div>
-        <div>
+        <div className="chat-form-container">
         <form className="chat-form" onSubmit={handleSubmit}>
           <input type="text" name="chat" id="chat"  onChange={handleChange} value={message}/>
           <button type="submit" className="send-btn"><FontAwesomeIcon icon={faPaperPlane} className="send-icon" /></button>
