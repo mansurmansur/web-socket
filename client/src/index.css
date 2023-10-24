@@ -92,7 +92,31 @@ code {
   list-style: none;
 }
 .users li{
-
+  width: 100%;
+  padding: 5px;
+  box-shadow: 0 0 2px gray;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  font-weight: 500;
+  color: grayscale;
+  border-radius: 5px;
+}
+.users li:hover{
+  opacity: .8;
+}
+.user-icon-frame{
+  background: lightgrey;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.user-icon{
+  color: white;
 }
 /* chat section */
 .chat-area{

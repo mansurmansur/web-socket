@@ -13,8 +13,8 @@ const activeUsers = [];
 
 // broadcast the list of active users to all clients
 function broadcastActiveUsers(){
-    const usernames = activeUsers.map((user) => user.username);
-    server.emit("activeUsers", usernames);
+    const users = activeUsers.map((user) => ({username: user.username, id: user.id}));
+    server.emit("activeUsers", users);
 }
 
 //listening for connection
@@ -40,12 +40,17 @@ server.on("connection", (socket)=>{
         }
     });
 
-    // listen for incoming messages
-    socket.on("msg", (msg) => {
-        console.log(msg)
-        socket.broadcast.emit("msg", msg)
+    // listen for private messages
+    socket.on("privateMessage", (data) => {
+        const {to, message} = data;
+        const toSocket = activeUsers.find((user)=> user.id === to);
+        if(toSocket){
+            //send the private message only to the intended user
+            server.to(toSocket.id).emit("privateMessage",{from: {id: socket.id, username: socket.username},message })
+        } else {
+            // Handle the case when the recipient is not found
+        }
     })
-
     // handle disconnection
     socket.on("disconnect", () => {
         // remove the user from the activeUsers array

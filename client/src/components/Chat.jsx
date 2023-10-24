@@ -9,9 +9,10 @@ const Chat = (props) => {
   const chatHistorRef = useRef();
   const [searchParams] = useSearchParams();
   const [message, setMessage] = useState('') //
-  const [chatHistory, setChatHistory] = useState([]); //tracking chat history
+  const [chatHistory, setChatHistory] = useState({}); //tracking chat history
   const [usernameSent, setUsernameSent] = useState(false); // Track whether username has been sent
   const [activeUsers, setActiveUsers] = useState([]) // tracking active users
+  const [userSelected, setUserSelected] = useState({isUserSelected: false, user: null})
 
 
   //receive message from the server
@@ -20,11 +21,20 @@ const Chat = (props) => {
     sendUsernameOnce();
 
     // define a function to handle incoming messages
-    const handleIncomingMessage = (text) => {
-      setChatHistory((prevChatHistory) => [
-        ...prevChatHistory,
-        { sender: "server", text: text },
-      ]);
+    const handleIncomingMessage = (data) => {
+      //update chat history for a specific user
+      setChatHistory((prevChatHistory) => {
+        //create a copy of the previous chat history
+        const updatedChatHistory = { ...prevChatHistory };
+
+        if (!updatedChatHistory[data.from.id]) {
+          updatedChatHistory[data.from.id] = []; // Initialize chat history if it doesn't exist
+        }
+
+        updatedChatHistory[data.from.id].push({sender: data.from.username, text: data.message}); // Add the new message
+
+        return updatedChatHistory;
+      });
 
       //scroll to he bottom when chat history updates
       // Check if chatHistorRef exists and has a scrollTop property
@@ -42,20 +52,21 @@ const Chat = (props) => {
     }
     
     // add the event listener for incoming messages
-    socket.on("msg",handleIncomingMessage);
+    socket.on("privateMessage",handleIncomingMessage);
 
     // add the event listener for active users
-    socket.on("activeUsers", (usernames) => {
-      usernames = usernames.filter((username)=> username !== searchParams.get("id"));
+    socket.on("activeUsers", (users) => {
+      users = users.filter((user)=> user.username !== searchParams.get("id"));
 
-      setActiveUsers(usernames)
+      setActiveUsers(users)
     })
     
-    // Clean up the event listener when the component unmounts
     return () => {
-      socket.off("msg", handleIncomingMessage)
-      socket.off("activeUsers")
-    }
+      // Clean up the event listener when the component unmounts
+      socket.off("privateMessage", handleIncomingMessage);
+      socket.off("activeUsers");
+    };
+    
   },[])
 
     // Function to send the username only if it hasn't been sent yet
@@ -78,14 +89,48 @@ const Chat = (props) => {
     e.preventDefault();
 
     //update chat history
-    setChatHistory((prevChatHistory) => prevChatHistory = [...prevChatHistory, {sender: searchParams.get('id'), text: message}])
+    setChatHistory((prevChatHistory) => {
+      // Create a copy of the previous chat history
+      const updatedChatHistory = {...prevChatHistory};
+
+      if(!updatedChatHistory[userSelected.user.id]){
+        updatedChatHistory[userSelected.user.id] = []
+      }
+
+      updatedChatHistory[userSelected.user.id].push({sender: searchParams.get('id'), text: message});
+
+      return updatedChatHistory;
+    });
     
     //send message to the server
-    sendMessage("msg", message)
+    const data = {
+      to: userSelected.user.id,
+      message
+    }
+    // for test purpose
+    console.log(data);
+    sendMessage("privateMessage", data)
 
     //clear the chat input
     setMessage('')
   }
+
+  // Functon to render chat history for specific user
+  const renderChatHistory = (userId) => {
+    if(chatHistory[userId]) {
+      console.log(chatHistory)
+      return chatHistory[userId].map(({sender, text}, index) => (
+        <div key={index} className={sender === searchParams.get('id')? "chat" : "chat other"}>
+        <span className="text">
+          {text}
+        </span>
+      </div>
+      ))
+    } else{
+      return <div>No chat history with this user.</div>;
+    }
+  }
+
   return (
     <div className="container chat-dashboard">
       <div className="aside-section">
@@ -100,7 +145,7 @@ const Chat = (props) => {
           <h3>Users</h3>
         {!activeUsers.length ? <p>No user online</p> : 
          <ul>
-           {activeUsers.map((username) => (<li key={username}>{username}</li>))}
+           {activeUsers.map((user) => (<li key={user.id} onClick={()=>{setUserSelected({isUserSelected: true, user: user})}}><span className="user-icon-frame"> <FontAwesomeIcon icon={faUser} className="user-icon"/></span>{user.username}</li>))}
          </ul>
         }
         </div>
@@ -108,21 +153,17 @@ const Chat = (props) => {
       
       {/* chat section */}
       <div className="chat-area">
-        <div className="profile-info">
+        {!userSelected.isUserSelected? <></>: 
+          <>
+            <div className="profile-info">
             <div className="profile">
             <FontAwesomeIcon icon={faUser} className="profile-icon"/>
             </div>
-            <p className="username">{searchParams.get('id')}</p>
+            <p className="username">{userSelected.user.username}</p>
         </div>
         <div className="previous-chat" ref={chatHistorRef}>
           {
-            chatHistory.map(({sender, text}) => 
-              <div className={sender === searchParams.get('id')? "chat" : "chat other"}>
-                <span className="text">
-                  {text}
-                </span>
-              </div>
-            )
+            renderChatHistory(userSelected.user.id)
           }
         </div>
         <div className="chat-form-container">
@@ -131,6 +172,8 @@ const Chat = (props) => {
           <button type="submit" className="send-btn"><FontAwesomeIcon icon={faPaperPlane} className="send-icon" /></button>
         </form>
         </div>
+          </>
+        }
       </div>
     </div>
   )
