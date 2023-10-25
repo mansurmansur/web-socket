@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPaperPlane, faUser} from '@fortawesome/free-solid-svg-icons'
-import {socket, sendMessage} from "../services/socket";
+// import {socket, sendMessage} from "../services/socket";
 
 
 const Chat = (props) => {
@@ -15,63 +15,6 @@ const Chat = (props) => {
   const [activeUsers, setActiveUsers] = useState([]) // tracking active users
   const [userSelected, setUserSelected] = useState({isUserSelected: false, user: null})
 
-
-  //
-  useEffect(()=>{
-    // Send the username only when the component mounts
-    sendUsernameOnce();
-
-    // add the event listener for active users
-    socket.on("activeUsers", (users) => {
-      users = users.filter((user)=> user.username !== searchParams.get("id"));
-
-      setActiveUsers(users)
-    })
-    
-    return () => {
-      // Clean up the event listener when the component unmounts
-      socket.off("activeUsers");
-    };
-
-  },[])
-
-  // this handles incoming private message
-  useEffect(()=>{ 
-    // add the event listener for incoming messages
-    socket.on("privateMessage",handleIncomingMessage);
-
-    return () => {
-      // Clean up the event listener when the component unmounts
-      socket.off("privateMessage", handleIncomingMessage);
-    };
-  },[]);
-
-
-    // Function to send the username only if it hasn't been sent yet
-    function sendUsernameOnce() {
-      if (!usernameSent) {
-        const username = searchParams.get("id"); // Replace with the user's actual username
-        sendMessage("setUsername", username);
-        setUsernameSent(true); // Mark the username as sent
-      }
-    }
-
-   // define a function to handle incoming messages
-   const handleIncomingMessage = (data) => {
-    //update chat history for a specific user
-    setChatHistory((prevChatHistory) => {
-      //create a copy of the previous chat history
-      const updatedChatHistory = { ...prevChatHistory };
-
-      if (!updatedChatHistory[data.from.id]) {
-        updatedChatHistory[data.from.id] = []; // Initialize chat history if it doesn't exist
-      }
-
-      updatedChatHistory[data.from.id].push({sender: data.from.username, text: data.message}); // Add the new message
-
-      return updatedChatHistory;
-    });
-  }
 
   //handle change
   function handleChange(e) {
@@ -98,12 +41,11 @@ const Chat = (props) => {
     });
     
     //send message to the server
-    const data = {
-      to: userSelected.user.id,
-      message
-    }
-    
-    sendMessage("privateMessage", data)
+    // const data = {
+    //   to: userSelected.user.id,
+    //   message
+    // }
+    // sendMessage("privateMessage", data)
     
     //clear the chat input
     setMessage('')
