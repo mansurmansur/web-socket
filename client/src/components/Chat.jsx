@@ -5,6 +5,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPaperPlane, faUser} from '@fortawesome/free-solid-svg-icons'
 import {socket, sendMessage} from "../services/socket";
 
+
 const Chat = (props) => {
   const chatHistorRef = useRef();
   const [searchParams] = useSearchParams();
@@ -15,44 +16,10 @@ const Chat = (props) => {
   const [userSelected, setUserSelected] = useState({isUserSelected: false, user: null})
 
 
-  //receive message from the server
+  //
   useEffect(()=>{
     // Send the username only when the component mounts
     sendUsernameOnce();
-
-    // define a function to handle incoming messages
-    const handleIncomingMessage = (data) => {
-      //update chat history for a specific user
-      setChatHistory((prevChatHistory) => {
-        //create a copy of the previous chat history
-        const updatedChatHistory = { ...prevChatHistory };
-
-        if (!updatedChatHistory[data.from.id]) {
-          updatedChatHistory[data.from.id] = []; // Initialize chat history if it doesn't exist
-        }
-
-        updatedChatHistory[data.from.id].push({sender: data.from.username, text: data.message}); // Add the new message
-
-        return updatedChatHistory;
-      });
-
-      //scroll to he bottom when chat history updates
-      // Check if chatHistorRef exists and has a scrollTop property
-      if (
-        chatHistorRef &&
-        chatHistorRef.current
-      ) {
-        // Scroll to the bottom when chat history updates
-        chatHistorRef.current.scrollTop = chatHistorRef.current.scrollHeight;
-      } else {
-        console.log(chatHistorRef);
-        console.log(chatHistorRef.current);
-        console.log(chatHistorRef.current.scrollTop);
-      }
-    }
-    
-    // add the event listener for incoming messages
-    socket.on("privateMessage",handleIncomingMessage);
 
     // add the event listener for active users
     socket.on("activeUsers", (users) => {
@@ -63,11 +30,22 @@ const Chat = (props) => {
     
     return () => {
       // Clean up the event listener when the component unmounts
-      socket.off("privateMessage", handleIncomingMessage);
       socket.off("activeUsers");
     };
-    
+
   },[])
+
+  // this handles incoming private message
+  useEffect(()=>{ 
+    // add the event listener for incoming messages
+    socket.on("privateMessage",handleIncomingMessage);
+
+    return () => {
+      // Clean up the event listener when the component unmounts
+      socket.off("privateMessage", handleIncomingMessage);
+    };
+  },[]);
+
 
     // Function to send the username only if it hasn't been sent yet
     function sendUsernameOnce() {
@@ -77,6 +55,23 @@ const Chat = (props) => {
         setUsernameSent(true); // Mark the username as sent
       }
     }
+
+   // define a function to handle incoming messages
+   const handleIncomingMessage = (data) => {
+    //update chat history for a specific user
+    setChatHistory((prevChatHistory) => {
+      //create a copy of the previous chat history
+      const updatedChatHistory = { ...prevChatHistory };
+
+      if (!updatedChatHistory[data.from.id]) {
+        updatedChatHistory[data.from.id] = []; // Initialize chat history if it doesn't exist
+      }
+
+      updatedChatHistory[data.from.id].push({sender: data.from.username, text: data.message}); // Add the new message
+
+      return updatedChatHistory;
+    });
+  }
 
   //handle change
   function handleChange(e) {
@@ -107,10 +102,9 @@ const Chat = (props) => {
       to: userSelected.user.id,
       message
     }
-    // for test purpose
-    console.log(data);
+    
     sendMessage("privateMessage", data)
-
+    
     //clear the chat input
     setMessage('')
   }
@@ -118,7 +112,6 @@ const Chat = (props) => {
   // Functon to render chat history for specific user
   const renderChatHistory = (userId) => {
     if(chatHistory[userId]) {
-      console.log(chatHistory)
       return chatHistory[userId].map(({sender, text}, index) => (
         <div key={index} className={sender === searchParams.get('id')? "chat" : "chat other"}>
         <span className="text">

@@ -1,7 +1,5 @@
 const {Server} = require('socket.io');
 
-console.log("Hi")
-
 const server = new Server(5000, {
     cors: {
         origin: "*"
@@ -46,7 +44,7 @@ server.on("connection", (socket)=>{
         const toSocket = activeUsers.find((user)=> user.id === to);
         if(toSocket){
             //send the private message only to the intended user
-            server.to(toSocket.id).emit("privateMessage",{from: {id: socket.id, username: socket.username},message })
+            socket.to(toSocket.id).emit("privateMessage",{from: {id: socket.id, username: socket.username},message })
         } else {
             // Handle the case when the recipient is not found
         }
@@ -60,6 +58,9 @@ server.on("connection", (socket)=>{
             // broadcast the update list of active users
             broadcastActiveUsers();
         }
+
+        // remove the privateMessage event listener for this socket
+        socket.removeAllListeners("privateMessage")
     })
 })
 
