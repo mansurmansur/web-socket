@@ -1,6 +1,6 @@
 import{BrowserRouter as Router, Routes, Route} from "react-router-dom"
-import Login from "./components/Login";
-import Chat from "./components/Chat";
+import Login from "./screens/Login";
+import Chat from "./screens/Chat";
 
 function App() {
   return (
