@@ -1,20 +1,69 @@
 import React from "react"
-import { useState} from "react";
+import { useEffect, useState} from "react";
 import { useSearchParams } from "react-router-dom";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faUser} from '@fortawesome/free-solid-svg-icons'
 import ChatArea from "../components/ChatArea";
-// import {socket, sendMessage} from "../services/socket";
+import AsideSection from "../components/AsideSection";
+import {socket, sendMessage} from "../services/socket";
 
 
 const Chat = (props) => {
   const [searchParams] = useSearchParams();
   const [message, setMessage] = useState('') //
+  const [count, setCount] = useState(0)
   const [chatHistory, setChatHistory] = useState({}); //tracking chat history
   const [usernameSent, setUsernameSent] = useState(false); // Track whether username has been sent
   const [activeUsers, setActiveUsers] = useState([]) // tracking active users
-  const [userSelected, setUserSelected] = useState({isUserSelected: true, user: {id: 12345, username: "Said"}})
+  const [userSelected, setUserSelected] = useState({isUserSelected: false, user: null})
 
+  //network calls inside the useEffect
+  useEffect(()=>{
+    //send the username only when component mounts
+    console.log(`I have been created ${count}`)
+    sendUsernameOnce();
+
+    // event listener for active users
+    socket.on("activeUsers", (users)=>{
+      setActiveUsers(users.filter((user)=>user.username !== searchParams.get('id')));
+    })
+
+    //listen for private messages
+    socket.on("privateMessage", (data) => {
+      const { from, message } = data;
+  
+      setChatHistory((prevChatHistory) => {
+        const updatedChatHistory = { ...prevChatHistory };
+  
+        if (!updatedChatHistory[from.id]) {
+          updatedChatHistory[from.id] = [];
+        }
+  
+        updatedChatHistory[from.id].push({
+          sender: from.username,
+          text: message,
+        });
+  
+        return updatedChatHistory;
+      });
+    });
+  
+
+    //do cleanup when the component unmounts
+    return () => {
+      setCount(preCount => preCount + 1);
+      console.log(count)
+      socket.off("activeUsers")
+      socket.off("privateMessage")
+    }
+  },[])
+
+  // Function to send the username only if it hasn't been sent yet
+  function sendUsernameOnce() {
+    if (!usernameSent) {
+      const username = searchParams.get("id"); // Replace with the user's actual username
+      sendMessage("setUsername", username);
+      setUsernameSent(true); // Mark the username as sent
+    }
+  }
 
   //handle change
   function handleChange(e) {
@@ -26,8 +75,8 @@ const Chat = (props) => {
   function handleSubmit(e) {
     e.preventDefault();
 
-    //update chat history
-    setChatHistory((prevChatHistory) => {
+     //update chat history
+     setChatHistory((prevChatHistory) => {
       // Create a copy of the previous chat history
       const updatedChatHistory = { ...prevChatHistory };
 
@@ -44,29 +93,21 @@ const Chat = (props) => {
     });
 
     //send message to the server
-    // const data = {
-    //   to: userSelected.user.id,
-    //   message
-    // }
-    // sendMessage("privateMessage", data)
-
+    const data = {
+      to: userSelected.user.id,
+      message
+    }
+    sendMessage("privateMessage", data)
+    
     //clear the chat input
     setMessage("");
   }
-  //testing purposes only
-  const testData = [
-    {sender: "other", text: "Hey, How are you?"}, {sender: searchParams.get('id'), text: "I am alright"},
-    {sender: "other", text: "Where have you been?"}, {sender: searchParams.get('id'), text: "I moved to Canada but now am back"},
-    {sender: "other", text: "Great to hear that."}, {sender: searchParams.get('id'), text: "Yeah"},
-    {sender: "other", text: "Can we hung out sometimes ?"}, {sender: searchParams.get('id'), text: "sure"},
-    {sender: "other", text: "How is Canada? "}, {sender: searchParams.get('id'), text: "It is a nice country but very expensive to live there"},
-    {sender: "other", text: "you moved back to kenya? "}, {sender: searchParams.get('id'), text: "Not yet but am planning to"},
-    {sender: "other", text: "ok."}, {sender: searchParams.get('id'), text: "what have you been up to?"},
-    {sender: "other", text: "Nothing much, I am a pilot now"}, {sender: searchParams.get('id'), text: "That is awesome"},
-    {sender: "other", text: "I fly most of the time within kenya but sometimes also to Somalia"}, {sender: searchParams.get('id'), text: "I am happy for you."},
-    {sender: "other", text: "I have two kids now"}, {sender: searchParams.get('id'), text: "That is good. I also married recently."},
-    {sender: "other", text: "I am heading out. let's catch up tomorrow"}, {sender: searchParams.get('id'), text: "sure"}
-  ]
+
+  //handle select user
+  function handleUserSelected(user){
+      setUserSelected({ isUserSelected: true, user: user });
+  }
+
   // Functon to render chat history for specific user
   const renderChatHistory = (userId) => {
     if (chatHistory[userId]) {
@@ -84,48 +125,12 @@ const Chat = (props) => {
   };
   return (
     <div className="container chat-dashboard">
-      <div className="aside-section">
-        <div className="profile-info">
-          <div className="profile">
-            <FontAwesomeIcon icon={faUser} className="profile-icon" />
-          </div>
-          <p className="username">{searchParams.get("id")}</p>
-        </div>
-
-        <div className="users">
-          <h3>Users</h3>
-          {!activeUsers.length ? (
-            <p>No user online</p>
-          ) : (
-            <ul>
-              {activeUsers.map((user) => (
-                <li
-                  key={user.id}
-                  onClick={() => {
-                    setUserSelected({ isUserSelected: true, user: user });
-                  }}
-                >
-                  <span className="user-icon-frame">
-                    {" "}
-                    <FontAwesomeIcon icon={faUser} className="user-icon" />
-                  </span>
-                  {user.username}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-
+      {/* aside section */}
+      <AsideSection activeUsers={activeUsers} handleUserSelected={handleUserSelected} username={searchParams.get('id')} />
       {/* chat section */}
-      <ChatArea chatHistory={testData.map(({ sender, text }, index) => (
-        <div
-          key={index}
-          className={sender === searchParams.get("id") ? "chat" : "chat other"}
-        >
-          <span className="text">{text}</span>
-        </div>
-      ))} userSelected={userSelected} message={message} handleChange={handleChange} handleSubmit={handleSubmit}/>
+      {!userSelected.isUserSelected? <></> : <>
+      <ChatArea chatHistory={renderChatHistory(userSelected.user.id)} userSelected={userSelected} message={message} handleChange={handleChange} handleSubmit={handleSubmit}/>
+      </>}
     </div>
   );
 };

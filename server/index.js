@@ -42,11 +42,13 @@ server.on("connection", (socket)=>{
     socket.on("privateMessage", (data) => {
         const {to, message} = data;
         const toSocket = activeUsers.find((user)=> user.id === to);
-        if(toSocket){
-            //send the private message only to the intended user
-            socket.to(toSocket.id).emit("privateMessage",{from: {id: socket.id, username: socket.username},message })
-        } else {
-            // Handle the case when the recipient is not found
+        if(socket.id !== to){
+            if(toSocket){
+                //send the private message only to the intended user
+                socket.to(toSocket.id).emit("privateMessage",{from: {id: socket.id, username: socket.username},message })
+            } else {
+                // Handle the case when the recipient is not found
+            }
         }
     })
     // handle disconnection
