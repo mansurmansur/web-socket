@@ -1,27 +1,33 @@
 import React from "react"
 import { useState } from "react";
+import {useDispatch} from 'react-redux'
+import { setUsername } from "../redux/user";
 import { createSearchParams, useNavigate } from "react-router-dom";
 
 const Login = (props) => {
     const navigate = useNavigate();
-    const [username, setUsername] = useState('');
+    const [input, setInput] = useState('');
+    const dispatch = useDispatch()
 
     function onChange(e) {
-        setUsername(e.target.value);
+        setInput(e.target.value);
     }
 
     function handleSubmit(e) {
         e.preventDefault()
         navigate({
           pathname: "/chat",
-          search: createSearchParams({id: username}).toString()
+          search: createSearchParams({id: input}).toString()
         });
+
+        //set username
+        dispatch(setUsername(input))
     }
   return (
     <div className="container">
       <form className="login-form" onSubmit={handleSubmit}>
         <label htmlFor="username">Username</label>
-        <input type="text" name="username" id="username"  value={username} placeholder="mmansur" onChange={onChange}/>
+        <input type="text" name="username" id="username"  value={input} placeholder="mmansur" onChange={onChange}/>
         <br />
         <input type="button" value="Submit"  />
       </form>

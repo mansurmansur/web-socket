@@ -1,5 +1,6 @@
 import React from "react"
 import { useEffect, useState} from "react";
+import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import ChatArea from "../components/ChatArea";
 import AsideSection from "../components/AsideSection";
@@ -7,9 +8,9 @@ import {socket, sendMessage} from "../services/socket";
 
 
 const Chat = (props) => {
+  const test = useSelector((state) => state.user.username)
   const [searchParams] = useSearchParams();
   const [message, setMessage] = useState('') //
-  const [count, setCount] = useState(0)
   const [chatHistory, setChatHistory] = useState({}); //tracking chat history
   const [usernameSent, setUsernameSent] = useState(false); // Track whether username has been sent
   const [activeUsers, setActiveUsers] = useState([]) // tracking active users
@@ -18,7 +19,7 @@ const Chat = (props) => {
   //network calls inside the useEffect
   useEffect(()=>{
     //send the username only when component mounts
-    console.log(`I have been created ${count}`)
+    console.log(`username is ${test}`)
     sendUsernameOnce();
 
     // event listener for active users
@@ -41,7 +42,9 @@ const Chat = (props) => {
           sender: from.username,
           text: message,
         });
-  
+
+       
+
         return updatedChatHistory;
       });
     });
@@ -49,8 +52,6 @@ const Chat = (props) => {
 
     //do cleanup when the component unmounts
     return () => {
-      setCount(preCount => preCount + 1);
-      console.log(count)
       socket.off("activeUsers")
       socket.off("privateMessage")
     }
