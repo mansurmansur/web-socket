@@ -6,6 +6,8 @@ const server = new Server(5000, {
     }
 });
 
+console.log("Starting")
+
 // all active users
 const activeUsers = [];
 
@@ -45,7 +47,7 @@ server.on("connection", (socket)=>{
         if(socket.id !== to){
             if(toSocket){
                 //send the private message only to the intended user
-                socket.to(toSocket.id).emit("privateMessage",{from: {id: socket.id, username: socket.username},message })
+                socket.to(toSocket.id).emit("privateMessage",{sender: {id: socket.id, username: socket.username},message })
             } else {
                 // Handle the case when the recipient is not found
             }

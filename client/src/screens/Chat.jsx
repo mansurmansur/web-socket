@@ -1,52 +1,37 @@
 import React from "react"
 import { useEffect, useState} from "react";
-import { useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import ChatArea from "../components/ChatArea";
 import AsideSection from "../components/AsideSection";
 import {socket, sendMessage} from "../services/socket";
-
+import { updateChatHistory } from "../redux/chat";
+import { updateIsUsernameSent, updateIsUserSelected } from "../redux/user";
+import { updateActiveUsers } from "../redux/users";
 
 const Chat = (props) => {
-  const test = useSelector((state) => state.user.username)
-  const [searchParams] = useSearchParams();
+  const dispatch = useDispatch()
+  const username = useSelector((state) => state.user.username)
   const [message, setMessage] = useState('') //
-  const [chatHistory, setChatHistory] = useState({}); //tracking chat history
-  const [usernameSent, setUsernameSent] = useState(false); // Track whether username has been sent
-  const [activeUsers, setActiveUsers] = useState([]) // tracking active users
-  const [userSelected, setUserSelected] = useState({isUserSelected: false, user: null})
+  const chatHistory = useSelector((state)=> state.chat.chatHistory); //tracking chat history
+  const usernameSent = useSelector((state) => state.user.usernameSent); // Track whether username has been sent
+  const activeUsers = useSelector((state)=> state.users.activeUsers)// tracking active users
+  const userSelected= useSelector((state) => state.user.userSelected)
 
   //network calls inside the useEffect
   useEffect(()=>{
     //send the username only when component mounts
-    console.log(`username is ${test}`)
     sendUsernameOnce();
 
     // event listener for active users
     socket.on("activeUsers", (users)=>{
-      setActiveUsers(users.filter((user)=>user.username !== searchParams.get('id')));
+      dispatch(updateActiveUsers(users.filter((user)=>user.username !== username)))
     })
 
     //listen for private messages
     socket.on("privateMessage", (data) => {
-      const { from, message } = data;
   
-      setChatHistory((prevChatHistory) => {
-        const updatedChatHistory = { ...prevChatHistory };
-  
-        if (!updatedChatHistory[from.id]) {
-          updatedChatHistory[from.id] = [];
-        }
-  
-        updatedChatHistory[from.id].push({
-          sender: from.username,
-          text: message,
-        });
-
-       
-
-        return updatedChatHistory;
-      });
+      //set chat history
+      dispatch(updateChatHistory(data));
     });
   
 
@@ -60,9 +45,8 @@ const Chat = (props) => {
   // Function to send the username only if it hasn't been sent yet
   function sendUsernameOnce() {
     if (!usernameSent) {
-      const username = searchParams.get("id"); // Replace with the user's actual username
       sendMessage("setUsername", username);
-      setUsernameSent(true); // Mark the username as sent
+      dispatch(updateIsUsernameSent(true)) // Mark the username as sent
     }
   }
 
@@ -77,21 +61,7 @@ const Chat = (props) => {
     e.preventDefault();
 
      //update chat history
-     setChatHistory((prevChatHistory) => {
-      // Create a copy of the previous chat history
-      const updatedChatHistory = { ...prevChatHistory };
-
-      if (!updatedChatHistory[userSelected.user.id]) {
-        updatedChatHistory[userSelected.user.id] = [];
-      }
-
-      updatedChatHistory[userSelected.user.id].push({
-        sender: searchParams.get("id"),
-        text: message,
-      });
-
-      return updatedChatHistory;
-    });
+     dispatch(updateChatHistory({sender: {username: username, id: socket.id}, message: message}));
 
     //send message to the server
     const data = {
@@ -106,16 +76,18 @@ const Chat = (props) => {
 
   //handle select user
   function handleUserSelected(user){
-      setUserSelected({ isUserSelected: true, user: user });
+      dispatch(updateIsUserSelected({ isUserSelected: true, user: user }));
   }
 
   // Functon to render chat history for specific user
   const renderChatHistory = (userId) => {
-    if (chatHistory[userId]) {
-      return chatHistory[userId].map(({ sender, text }, index) => (
+    const chat = chatHistory.find(element => element.member_ids.includes(userId));
+    console.log(chat)
+    if(chat){
+       chat.chat.map(({ sender, text }, index) => (
         <div
           key={index}
-          className={sender === searchParams.get("id") ? "chat" : "chat other"}
+          className={sender === username ? "chat" : "chat other"}
         >
           <span className="text">{text}</span>
         </div>
@@ -127,7 +99,7 @@ const Chat = (props) => {
   return (
     <div className="container chat-dashboard">
       {/* aside section */}
-      <AsideSection activeUsers={activeUsers} handleUserSelected={handleUserSelected} username={searchParams.get('id')} />
+      <AsideSection activeUsers={activeUsers} handleUserSelected={handleUserSelected} username={username} />
       {/* chat section */}
       {!userSelected.isUserSelected? <></> : <>
       <ChatArea chatHistory={renderChatHistory(userSelected.user.id)} userSelected={userSelected} message={message} handleChange={handleChange} handleSubmit={handleSubmit}/>

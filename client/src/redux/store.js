@@ -1,13 +1,12 @@
 import {configureStore} from '@reduxjs/toolkit'
 import chatReducer from './chat'
 import userReducer from './user'
-import messageReducer from './message'
+import usersReducer from './users'
 
 export default configureStore({
     reducer: {
         chat: chatReducer,
         user: userReducer,
-        message: messageReducer,
-        
+        users: usersReducer
     }
 })
