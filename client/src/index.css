@@ -24,6 +24,12 @@ body {
   overflow-x: hidden;
   height: 95%;
 }
+.login-form{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 .login-form label {
   margin: 10px;
   color: blueviolet;
@@ -33,15 +39,15 @@ body {
 .login-form input {
   margin: 10px;
 }
-.login-form input[type="text"] {
-  width: 100%;
+.login-form input[type="text"], .login-form input[type="password"] {
+  width: 80%;
   padding: 8px 5px;
   border: 2px solid blueviolet;
   border-radius: 5px;
 }
 
 .login-form input[type="button"] {
-  width: 100%;
+  width: 80%;
   padding: 8px 0;
   background-color: blueviolet;
   border: none;
