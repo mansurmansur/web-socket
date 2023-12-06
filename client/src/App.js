@@ -1,16 +1,20 @@
 import{BrowserRouter as Router, Routes, Route} from "react-router-dom"
 import Login from "./screens/Login";
-import Chat from "./screens/Chat";
+import Register from "./screens/Register";
+import Home from "./screens/Home";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/chat" element={<Chat />} />
-      </Routes>
-    </Router>
+    // <Router>
+    //   <Routes>
+    //     <Route path="/">
+    //       <Route index element={<Home />} />
+    //       <Route path="login" element={<Login />} />
+    //       <Route path="register" element={<Register />} />
+    //     </Route>
+    //   </Routes>
+    // </Router>
+    <Login />
   );
 }
 
