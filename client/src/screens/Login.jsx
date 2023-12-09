@@ -23,6 +23,8 @@ const Login = (props) => {
 
     function handleSubmit(e) {
       e.preventDefault()
+      console.log(e.target[0].value)
+      console.log(e.target[1].value)
         // //data validation
         // if(userInputUsername !== '' & password !== ''){
         //   signInWithEmailAndPassword(auth, userInputUsername, password)
@@ -62,7 +64,7 @@ const Login = (props) => {
             />
           </div>
 
-          <input type="button" value="Login" onClick={handleSubmit} />
+          <button className="login-button">Login</button>
 
           <p className="text-button">Don't have an account? Register</p>
         </form>

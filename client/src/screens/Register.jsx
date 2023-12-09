@@ -51,7 +51,7 @@ const Register = (props) => {
             />
           </div>
 
-          <input type="button" value="Create new account" />
+          <button className="register-buttonnmb">Create new account</button>
           <p className="text-button">Already have an account? Login</p>
         </form>
       </div>

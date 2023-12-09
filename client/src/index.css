@@ -12,7 +12,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  background: blueviolet;
+  background: #E1E1DE;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -30,6 +30,63 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+/* Home */
+.home-wrapper{
+  background: white;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+.sideNav{
+  flex: 1;
+}
+.navBar{
+  background: #F0F2F5;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5px;
+}
+.logo{
+  font-weight: 700;
+  font-size: 1.2em;
+  color: gray;
+}
+.profile-wrapper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 2;
+}
+.user-name{
+  margin: 0 5px;
+  color: gray;
+}
+.searchBar{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  border-bottom: 1.2px solid gray;
+}
+.search-form{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.search-form input{
+  width: 95%;
+  background-color:  #E0F6F9;
+  border: 0;
+  outline: none;
+}
+.chatSection{
+  flex: 2;
+  background: #EFEAF2;
 }
 /* Login & Register styling section */
 .page-header {
@@ -72,7 +129,7 @@ input[type="text"], input[type="email"], input[type="password"] {
   border-radius: 5px;
 }
 
-input[type="button"] {
+.login-button, .register-button {
   width: 80%;
   padding: 8px 0;
   background-color: blueviolet;
@@ -189,7 +246,10 @@ code {
   text-transform: capitalize;
 }
 .profile-icon{
-  color: blueviolet;
+  color: gray;
+  background: white;
+  padding: 5px;
+  border-radius: 50%;
 }
 .previous-chat{
   width: 100%; 

@@ -14,7 +14,7 @@ function App() {
     //     </Route>
     //   </Routes>
     // </Router>
-    <Login />
+    <Home />
   );
 }
 
