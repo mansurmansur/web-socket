@@ -103,6 +103,30 @@ body {
 }
 .chatHistory{
   height: calc(100% - 100px);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.other{
+  align-self: flex-end;
+}
+.other .message-body{
+  background-color: #EEEEEE;
+  border-radius: 8px 0 8px 8px;
+}
+.message-body{
+  background-color: white;
+  border-radius: 0 8px 8px 8px;
+  padding: 5px;
+  margin-left: 5px;
+  height: 30px;
+  width: fit-content;
+  box-shadow: 0 0 5px lightgrey;
+}
+.time{
+  font-size: .8em;
+  color: rgb(155, 154, 154);
+  padding: 3px 8px;
 }
 .chatFormSection{
   width: 100%;
