@@ -4,6 +4,7 @@ import ChatHistory from "./ChatHistory";
 import ChatForm from "./ChatForm";
 
 const ChatSection = (props) => {
+
   return (
     <div className="chatSection">
       <ChatNavBar />
