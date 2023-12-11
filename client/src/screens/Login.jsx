@@ -1,23 +1,15 @@
 import React from "react"
-import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {useDispatch} from 'react-redux'
-import { setUsername } from "../redux/user";
-import { useNavigate } from "react-router-dom";
+import { setUsername, setUserID } from "../redux/user";
 import {getAuth, signInWithEmailAndPassword} from 'firebase/auth'
 import { app, db } from "../services/firebase";
 import { collection, doc, getDoc} from "firebase/firestore";
 
 const Login = (props) => {
   const auth = getAuth(app);
-  // const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // navigate to signup page for new users
-  function handleCreateNewAccount(e) {
-    // navigate({
-    //   pathname: "/register"
-    // });
-  }
+  const navigate = useNavigate()  
 
   // function that validates emails
   function validateEmail(email) {
@@ -51,11 +43,12 @@ const Login = (props) => {
           const usersRef = collection(db, "users")
           const userDoc =  doc(usersRef, response.user.uid)
           const docSnap = await getDoc(userDoc);
-          console.log(docSnap)
-
+          
           if(docSnap.exists()){
             const userInfo = docSnap.data()
-            console.log(userInfo)
+            dispatch(setUsername(userInfo.username))
+            dispatch(setUserID(userInfo.userID))
+            navigate("/")
           } else {
             console.log("No Such document !")
           }
@@ -86,7 +79,7 @@ const Login = (props) => {
 
           <button className="login-button">Login</button>
 
-          <p className="text-button">Don't have an account? Register</p>
+          <p className="text-button">Don't have an account? <Link to="/register">Register</Link></p>
         </form>
       </div>
     </div>

@@ -4,20 +4,23 @@ import Login from "./screens/Login";
 import Register from "./screens/Register";
 import Home from "./screens/Home";
 
+
 function App() {
   const userID = useSelector((state)=> state.user.userID)
 
-  const ProtectedRoute = ({userID}) => {
+  const ProtectedRoute = ({children}) => {
     if(!userID){
       return <Navigate to="/login" replace />;
     }
+
+    return children;
   }
   return (
     <Router>
       <Routes>
         <Route path="/">
           <Route index element={
-            <ProtectedRoute userID={userID}>
+            <ProtectedRoute>
               <Home />
             </ProtectedRoute>
           } />
