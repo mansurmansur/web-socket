@@ -4,7 +4,7 @@ export const userSlice = createSlice({
     name: 'user',
     initialState: {
         username: '',
-        userID: '',
+        userid: '',
         isUsernameSent: false,
         userSelected: {isUserSelected: false, user: null}
     },
@@ -12,8 +12,8 @@ export const userSlice = createSlice({
         setUsername: (state, action) => {
             state.username = action.payload;
         },
-        setUserID: (state, action) => {
-            state.userID = action.payload;
+        setUserid: (state, action) => {
+            state.userid = action.payload;
         },
         updateIsUsernameSent: (state, action) => {
             state.isUsernameSent = action.payload;
@@ -24,5 +24,5 @@ export const userSlice = createSlice({
     }
 });
 
-export const {setUsername, setUserID, updateIsUserSelected, updateIsUsernameSent} = userSlice.actions
+export const {setUsername, setUserid, updateIsUserSelected, updateIsUsernameSent} = userSlice.actions
 export default userSlice.reducer

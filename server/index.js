@@ -20,20 +20,22 @@ function broadcastActiveUsers(){
 //listening for connection
 server.on("connection", (socket)=>{
     //listen for username
-    socket.on("setUsername", (username) => {
+    socket.on("setUser", (user) => {
+        const {username, id} = user;
         // Associate the username with the socket
         socket.username = username;
+        socket.id = id;
 
         //create an object for the user
-        const user = {
+        const userInfo = {
             id: socket.id,
             username: socket.username
         }
 
         //Add the user to activeusers array if not in it
-        const userIndex = activeUsers.findIndex((user) => user.id === socket.id);
+        const userIndex = activeUsers.findIndex((userInfo) => user.id === socket.id);
         if(userIndex === -1){
-            activeUsers.push(user);
+            activeUsers.push(userInfo);
 
             //update list of active users
             broadcastActiveUsers();

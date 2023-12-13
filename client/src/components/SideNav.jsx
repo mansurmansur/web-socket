@@ -1,6 +1,7 @@
 import React from "react"
 import Navbar from "./Navbar";
 import SearchBar from "./SearchBar";
+import ActiveUsers from "./ActiveUsers";
 
 
 const SideNav = (props) => {
@@ -8,6 +9,7 @@ const SideNav = (props) => {
     <div className="sideNav">
         <Navbar />
         <SearchBar />
+        <ActiveUsers />
     </div>
   )
 };

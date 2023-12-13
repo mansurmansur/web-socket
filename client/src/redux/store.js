@@ -7,6 +7,6 @@ export default configureStore({
     reducer: {
         chat: chatReducer,
         user: userReducer,
-        users: usersReducer
+        users: usersReducer,
     }
 })

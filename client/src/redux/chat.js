@@ -1,5 +1,5 @@
 import { createSlice} from "@reduxjs/toolkit";
-import {socket} from "../services/socket";
+import user from "./user";
 
 
 export const chatSlice = createSlice({
@@ -17,7 +17,7 @@ export const chatSlice = createSlice({
       const chatExist = state.chatHistory.some(element => element.member_ids.includes(sender.id));
 
       if(!chatExist){
-        state.chatHistory.push({member_ids: [sender.id, socket.id], chat: [{sender: sender.username, text: message}]})
+        state.chatHistory.push({member_ids: [sender.id, user.userid], chat: [{sender: sender.username, text: message}]})
       }
 
       state.chatHistory.forEach(element => {

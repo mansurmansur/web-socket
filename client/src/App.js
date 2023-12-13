@@ -6,7 +6,7 @@ import Home from "./screens/Home";
 
 
 function App() {
-  const userID = useSelector((state)=> state.user.userID)
+  const userID = useSelector((state)=> state.user.userid)
 
   const ProtectedRoute = ({children}) => {
     if(!userID){

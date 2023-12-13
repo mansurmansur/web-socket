@@ -1,10 +1,7 @@
-const { io } = require("socket.io-client");
-const socket = io("http://localhost:5000");
+// socket.js
+import { io } from 'socket.io-client';
 
-// send a message to the server
-function sendMessage(messageType, data) {
-    socket.emit(messageType, data);
-}
+const socket = io('http://localhost:5000');
 
+export default socket;
 
-export {socket, sendMessage};
