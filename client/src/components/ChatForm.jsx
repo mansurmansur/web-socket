@@ -1,7 +1,7 @@
 import React from "react"
 import { useSelector, useDispatch } from "react-redux";
 import { updateChatHistory } from "../redux/chat";
-import { sendMessage } from "../redux/socket";
+import { sendMessage } from "../services/socket";
 
 const ChatForm = (props) => {
   const sender = useSelector(state => state.user)
@@ -13,8 +13,6 @@ const ChatForm = (props) => {
     e.preventDefault();
 
     //save the message first
-    //update chat history
-    dispatch(updateChatHistory({sender: {username: sender.username, id: sender.id}, message: e.target[0].value}));
 
     //data
     const data = {
@@ -22,7 +20,7 @@ const ChatForm = (props) => {
       message: e.target[0].value
     }
     //send message
-    dispatch(sendMessage({type: "privateMessage", data}));
+   
   }
   return (
     <div className="chatFormSection">

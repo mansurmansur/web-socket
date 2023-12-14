@@ -6,19 +6,14 @@ import { updateIsUserSelected } from "../redux/user";
 import Card from "./Card";
 
 const ActiveUsers = (props) => {
-    const socket = useSelector(state=> state.socket.socket)
     const dispatch = useDispatch();
     const username = useSelector(state => state.user.username)
-    const activeusers = useSelector(state => state.users.activeusers)
+    const activeusers = useSelector(state => state.users.ActiveUsers)
 
     useEffect(() => {
-      // event listener for active users
-      socket.on("activeUsers", (users) => {
-        dispatch(
-          updateActiveUsers(users.filter((user) => user.username !== username))
-        );
-      });
-    }, [activeusers]);
+
+
+    }, []);
 
     // function handle click
     function handleClick(user){
@@ -27,7 +22,7 @@ const ActiveUsers = (props) => {
 
   return (
     <div>
-    {typeof activeusers !== "undefined" && activeusers.length > 0 ? (
+    {typeof activeusers && activeusers.length > 0 ? (
       <div>
         {activeusers.map((user, index) => (
           <Card

@@ -1,11 +1,11 @@
 import React from "react"
 import { Link, useNavigate } from "react-router-dom";
 import {useDispatch} from 'react-redux'
-import { setUsername, setUserid } from "../redux/user";
+import { setUsername, setId } from "../redux/user";
 import {getAuth, signInWithEmailAndPassword} from 'firebase/auth'
 import { app, db } from "../services/firebase";
 import { collection, doc, getDoc} from "firebase/firestore";
-import { connectSocket, sendMessage } from "../redux/socket";
+
 
 
 const Login = (props) => {
@@ -50,9 +50,8 @@ const Login = (props) => {
             const userInfo = docSnap.data()
             console.log(docSnap.data())
             dispatch(setUsername(userInfo.username))
-            dispatch(setUserid(response.user.id))
-            connectSocket()
-            sendMessage({ type: "setUser", data: {username: userInfo.username, id: response.user.uid}})
+            dispatch(setId(response.user.uid))
+            
             navigate("/")
           } else {
             console.log("No Such document !")
