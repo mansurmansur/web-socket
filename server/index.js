@@ -23,6 +23,8 @@ server.listen(3000, {
 // (check if the user has some messages in the queue sent when user was offline)
 // (possible checks the user and then update online status)
 server.use((socket, next) => {
+    // get firebase userInfo
+    console.log(socket.handshake.auth.user)
     next();
 })
 

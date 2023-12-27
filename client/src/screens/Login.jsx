@@ -3,6 +3,7 @@ import '../styles/forms/forms.css'
 import { Link, useNavigate } from "react-router-dom";
 import {useDispatch} from 'react-redux'
 import { setUsername, setId } from "../redux/user";
+import socket from "../services/socket";
 import {getAuth, signInWithEmailAndPassword} from 'firebase/auth'
 import { app, db } from "../services/firebase";
 import { collection, doc, getDoc} from "firebase/firestore";
@@ -52,7 +53,7 @@ const Login = (props) => {
             console.log(docSnap.data())
             dispatch(setUsername(userInfo.username))
             dispatch(setId(response.user.uid))
-            
+            socket.connect();
             navigate("/")
           } else {
             console.log("No Such document !")
