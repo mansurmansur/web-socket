@@ -16,4 +16,4 @@ export const usersSlice = createSlice({
 });
 
 export const {updateActiveUsers } = usersSlice.actions;
-export const usersReducer = usersSlice.reducer
+export default usersSlice.reducer

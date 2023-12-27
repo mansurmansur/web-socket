@@ -1,4 +1,5 @@
 import React from "react"
+import "../styles/sideNav/sideNav.css"
 import Navbar from "./Navbar";
 import SearchBar from "./SearchBar";
 import ActiveUsers from "./ActiveUsers";

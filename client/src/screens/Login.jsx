@@ -1,4 +1,5 @@
 import React from "react"
+import '../styles/forms/forms.css'
 import { Link, useNavigate } from "react-router-dom";
 import {useDispatch} from 'react-redux'
 import { setUsername, setId } from "../redux/user";
@@ -45,7 +46,7 @@ const Login = (props) => {
           const usersRef = collection(db, "users")
           const userDoc =  doc(usersRef, response.user.uid)
           const docSnap = await getDoc(userDoc);
-          
+          console.log(response.user)
           if(docSnap.exists()){
             const userInfo = docSnap.data()
             console.log(docSnap.data())

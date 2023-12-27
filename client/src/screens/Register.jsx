@@ -1,32 +1,39 @@
 import React from "react"
-import { Link } from "react-router-dom";
+import '../styles/forms/forms.css'
+import {Link } from "react-router-dom";
 import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth'
-import { app } from "../services/firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { app, db } from "../services/firebase";
 
 
 const Register = (props) => {
   const auth = getAuth(app);
 
   
-const handleSubmit = e => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   if(validateEmail(e.target[0].value) && 
   validateName(e.target[1].value) && 
   validateName(e.target[2].value) && 
   validatePassword(e.target[3].value) && 
   validateConfirmPassword(e.target[4].value, e.target[3].value)){
-    createUserWithEmailAndPassword(auth, e.target[0].value, e.target[3].value)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      console.log(user)
-    })
-    .catch((error)=>{
-      const errorCode = error.code;
-      console.log(errorCode)
-    })
-    console.log("passed")
+    try {
+      const response = await createUserWithEmailAndPassword(auth, e.target[0].value, e.target[3].value);
+
+      if(response.user.uid){
+        await setDoc(doc(db, "users", response.user.uid),{
+          firstname: e.target[1].value,
+          lastname: e.target[2].value,
+          username: `${e.target[1].value}${e.target[2].value.charAt(0)}`,
+          id: response.user.uid,
+          photoUrl: ''
+        })
+      }
+    } catch (error) {
+      console.log(error.code)
+    }
   } else {
-    console.log("not passed")
+    console.log("Form validation failed")
   }
 }
 
@@ -121,7 +128,7 @@ function validateConfirmPassword(confirmPassword, password){
           </div>
 
           <button className="register-button">Create new account</button>
-          <p className="text-button">Already have an account? Login</p>
+          <p className="text-button">Already have an account? <Link to={'/login'}>Login</Link></p>
         </form>
       </div>
     </div>

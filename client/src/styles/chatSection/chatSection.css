@@ -1,0 +1,17 @@
+.chatSection{
+    flex: 2;
+    background: #E1E1DE;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .chatSection .navBar{
+    border-left: .5px solid lightgrey;
+    padding: 10px;
+  }
+  .chatSection .profile-wrapper{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+

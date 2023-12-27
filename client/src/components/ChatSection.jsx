@@ -1,4 +1,5 @@
 import React from "react"
+import "../styles/chatSection/chatSection.css"
 import { useSelector } from "react-redux";
 import ChatNavBar from "./ChatNavBar";
 import ChatHistory from "./ChatHistory";

@@ -1,0 +1,7 @@
+.chatHistory{
+    height: calc(100% - 100px);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow-Y: auto;
+  }
