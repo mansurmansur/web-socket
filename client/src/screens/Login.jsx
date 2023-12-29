@@ -53,6 +53,7 @@ const Login = (props) => {
             console.log(docSnap.data())
             dispatch(setUsername(userInfo.username))
             dispatch(setId(response.user.uid))
+            socket.auth = {userInfo};
             socket.connect();
             navigate("/")
           } else {

@@ -1,25 +1,22 @@
 import React from "react"
 import "../styles/forms/chatForm.css"
 import { useSelector, useDispatch } from "react-redux";
+import socket from "../services/socket";
 import { updateChatHistory } from "../redux/chat";
 
 const ChatForm = (props) => {
   const sender = useSelector(state => state.user)
-  const to = useSelector(state => state.user.userSelected.user.id)
+  const to = useSelector(state => state.user.userSelected.user)
   const dispatch = useDispatch();
 
   // handle send
   function handleSend(e){
     e.preventDefault();
+    const message =  e.target[0].value;
 
-    //save the message first
-
-    //data
-    const data = {
-      to,
-      message: e.target[0].value
-    }
-    //send message
+    // Send message via socket
+    socket.emit("private message", { content: message, to: to.id });
+    dispatch(updateChatHistory({ sender, receiver: to, message }));
 
     //clear 
     e.target[0].value = ''

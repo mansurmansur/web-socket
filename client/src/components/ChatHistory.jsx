@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateChatHistory } from "../redux/chat";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../services/firebase";
+import socket from "../services/socket";
 import { useRef, useEffect } from "react";
 import Message from "./Message";
 
@@ -12,9 +13,8 @@ const ChatHistory = (props) => {
   const scrollRef = useRef()
   const dispatch = useDispatch()
   const user = useSelector((state) => state.user.userSelected.user) 
-  const userid = useSelector(state=> state.user.userid)
   const username = useSelector(state => state.user.username)
-  const [chatHistory, setChatHistory] = useState([])
+  const chatHistory = useSelector(state => state.chat.chatHistory)
 
   useEffect(() => {
     // scroll to bottom
@@ -32,21 +32,19 @@ const ChatHistory = (props) => {
   },[])
 
   useEffect(()=>{
-
-
+    socket.on("private message", ({content, from}) => {
+      
+    })
     return () => {
     }
 
   },[])
 
-  // convert time to human readable date or time
-  const convertTimestamp = timestamp => {
-    return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000)
-  }
+
 
   // pull previous chat if it exist
   const renderChat = (chatHistory) => {
-    const chatExist = chatHistory.some(element => element.participants.includes(user.id));
+    const chatExist = chatHistory.some(element => element.member_ids?.includes(user.id));
   
     console.log(chatExist)
     if (chatExist) {
@@ -54,13 +52,13 @@ const ChatHistory = (props) => {
       let mappedMessages = [];
   
       chatHistory.forEach(element => {
-        const isAMember = element.participants.includes(user.id);
+        const isAMember = element.member_ids.includes(user.id);
         if (isAMember) {
           // Map messages and push them to the mappedMessages array
           mappedMessages = [
             ...mappedMessages,
-            ...element.messages.map(({ content, receiverID, senderID, timestamp }, index) => (
-              <Message className={senderID === userid ? "" : "other"} message={content} key={index} date={convertTimestamp(timestamp)} />
+            ...element.chat.map(({ sender, text }, index) => (
+              <Message className={sender === username ? "" : "other"} message={text} key={index} />
             ))
           ];
         }

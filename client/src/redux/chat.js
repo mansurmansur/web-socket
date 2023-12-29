@@ -10,18 +10,18 @@ export const chatSlice = createSlice({
   reducers: {
     updateChatHistory: (state, action) => {
       //update chatHistory
-      const {sender, message} = action.payload;
-      console.log(sender)
+      const {sender, receiver, message} = action.payload;
+      console.log(receiver)
 
       //checking if chat exist
-      const chatExist = state.chatHistory.some(element => element.member_ids.includes(sender.id));
+      const chatExist = state.chatHistory.some(element => element.member_ids.includes(receiver.id));
 
       if(!chatExist){
-        state.chatHistory.push({member_ids: [sender.id, user.userid], chat: [{sender: sender.username, text: message}]})
+        state.chatHistory.push({member_ids: [receiver.id, sender.id], chat: [{sender: sender.username, text: message}]})
       }
 
       state.chatHistory.forEach(element => {
-        const isAMember = element.member_ids.includes( sender.id);
+        const isAMember = element.member_ids.includes( receiver.id);
         if(isAMember){
           element.chat.push({sender: sender.username, text: message})
         }

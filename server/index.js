@@ -12,7 +12,7 @@ usersRef.get().then((snapshot) => {
 }).catch((err) => console.log(err))
 
 //
-server.listen(3000, {
+server.listen(5000, {
     cors: {
         origin: "*"
     }
@@ -24,15 +24,24 @@ server.listen(3000, {
 // (possible checks the user and then update online status)
 server.use((socket, next) => {
     // get firebase userInfo
-    console.log(socket.handshake.auth.user)
+    const user = socket.handshake.auth.userInfo;
+   if(user){
+    socket.userID = user.id;
+    socket.username = user.username
+   }
     next();
 })
 
 //listening for connection
 server.on("connection", (socket)=>{
+    
     //TODO: listen for message
 
-    //TODO: send message
+    //TO4DO: send message
+    socket.on("private message", ({content, to}) => {
+        console.log(`message to : ${to} , content: ${content}`)
+        // socket.to(to).emit("private message", {content, from: socket.userID})
+    })
 
     //TODO: listen for disconnection
 })

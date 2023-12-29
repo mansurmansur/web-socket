@@ -13,7 +13,7 @@ export const userSlice = createSlice({
             state.username = action.payload;
         },
         setId: (state, action) => {
-            state.userid = action.payload;
+            state.id = action.payload;
         },
         updateIsUsernameSent: (state, action) => {
             state.isUsernameSent = action.payload;
