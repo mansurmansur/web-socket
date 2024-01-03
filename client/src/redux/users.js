@@ -12,8 +12,11 @@ export const usersSlice = createSlice({
         {
             state.activeUsers = [...action.payload]
         },
+        getUser: (state, action) => {
+            return state.activeUsers.find(user => user.id === action.payload)
+        }
     }
 });
 
-export const {updateActiveUsers } = usersSlice.actions;
+export const {updateActiveUsers, getUser } = usersSlice.actions;
 export default usersSlice.reducer

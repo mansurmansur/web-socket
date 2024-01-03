@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import "../styles/chatSection/chatHistory.css"
 import { useDispatch, useSelector } from "react-redux";
-import { updateChatHistory } from "../redux/chat";
+import { updateChatHistory} from "../redux/chat";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../services/firebase";
 import socket from "../services/socket";
@@ -12,8 +12,8 @@ import Message from "./Message";
 const ChatHistory = (props) => {
   const scrollRef = useRef()
   const dispatch = useDispatch()
-  const user = useSelector((state) => state.user.userSelected.user) 
-  const username = useSelector(state => state.user.username)
+  const userSelected = useSelector((state) => state.user.userSelected.user) 
+  const user = useSelector(state => state.user)
   const chatHistory = useSelector(state => state.chat.chatHistory)
 
   useEffect(() => {
@@ -31,20 +31,12 @@ const ChatHistory = (props) => {
     scrollToBottom();
   },[])
 
-  useEffect(()=>{
-    socket.on("private message", ({content, from}) => {
-      
-    })
-    return () => {
-    }
-
-  },[])
 
 
 
   // pull previous chat if it exist
   const renderChat = (chatHistory) => {
-    const chatExist = chatHistory.some(element => element.member_ids?.includes(user.id));
+    const chatExist = chatHistory.some(element => element.member_ids?.includes(userSelected.id));
   
     console.log(chatExist)
     if (chatExist) {
@@ -52,13 +44,13 @@ const ChatHistory = (props) => {
       let mappedMessages = [];
   
       chatHistory.forEach(element => {
-        const isAMember = element.member_ids.includes(user.id);
+        const isAMember = element.member_ids.includes(userSelected.id);
         if (isAMember) {
           // Map messages and push them to the mappedMessages array
           mappedMessages = [
             ...mappedMessages,
             ...element.chat.map(({ sender, text }, index) => (
-              <Message className={sender === username ? "" : "other"} message={text} key={index} />
+              <Message className={sender === user.username ? "" : "other"} message={text} key={index} />
             ))
           ];
         }

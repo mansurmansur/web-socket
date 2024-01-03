@@ -1,4 +1,5 @@
 import React from "react"
+import { useEffect } from "react";
 import '../styles/forms/forms.css'
 import { Link, useNavigate } from "react-router-dom";
 import {useDispatch} from 'react-redux'
@@ -15,6 +16,13 @@ const Login = (props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate()  
 
+  useEffect(()=>{
+    console.log("Login 1st creation")
+
+    return()=>{
+      console.log("Login destroyed")
+    }
+  })
   // function that validates emails
   function validateEmail(email) {
     const emailReg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
