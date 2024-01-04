@@ -1,5 +1,4 @@
 import { createSlice} from "@reduxjs/toolkit";
-import user from "./user";
 
 
 export const chatSlice = createSlice({
@@ -10,7 +9,6 @@ export const chatSlice = createSlice({
   reducers: {
     updateChatHistory: (state, action) => {
       //update chatHistory
-      console.log("Hi...")
       const {sender, receiver, message} = action.payload;
 
       //checking if chat exist

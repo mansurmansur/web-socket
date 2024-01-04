@@ -45,20 +45,15 @@ const Login = (props) => {
 
   function handleSubmit(e) {
     e.preventDefault();
-    console.log(e.target[0].value);
-    console.log(e.target[1].value);
     //data validation
     if (validateEmail(e.target[0].value) && validatePassword(e.target[1].value)) {
       signInWithEmailAndPassword(auth,e.target[0].value , e.target[1].value)
         .then(async (response) => {
-          console.log(response.user.uid)
           const usersRef = collection(db, "users")
           const userDoc =  doc(usersRef, response.user.uid)
           const docSnap = await getDoc(userDoc);
-          console.log(response.user)
           if(docSnap.exists()){
             const userInfo = docSnap.data()
-            console.log(docSnap.data())
             dispatch(setUsername(userInfo.username))
             dispatch(setId(response.user.uid))
             socket.auth = {userInfo};

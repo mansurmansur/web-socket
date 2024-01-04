@@ -1,17 +1,11 @@
-import React, { useState } from "react"
 import "../styles/chatSection/chatHistory.css"
-import { useDispatch, useSelector } from "react-redux";
-import { updateChatHistory} from "../redux/chat";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
-import { db } from "../services/firebase";
-import socket from "../services/socket";
+import { useSelector } from "react-redux";
 import { useRef, useEffect } from "react";
 import Message from "./Message";
 
 
 const ChatHistory = (props) => {
   const scrollRef = useRef()
-  const dispatch = useDispatch()
   const userSelected = useSelector((state) => state.user.userSelected.user) 
   const user = useSelector(state => state.user)
   const chatHistory = useSelector(state => state.chat.chatHistory)
@@ -38,7 +32,6 @@ const ChatHistory = (props) => {
   const renderChat = (chatHistory) => {
     const chatExist = chatHistory.some(element => element.member_ids?.includes(userSelected.id));
   
-    console.log(chatExist)
     if (chatExist) {
       // Initialize an array to store mapped messages
       let mappedMessages = [];
@@ -57,7 +50,6 @@ const ChatHistory = (props) => {
       });
   
       // Return the mapped messages
-      console.log(mappedMessages)
       return mappedMessages.length > 0 ? mappedMessages : <div>No messages in the chat history.</div>;
     } else {
       return <div>No chat history with this user.</div>;

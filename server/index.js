@@ -44,13 +44,17 @@ server.on("connection", (socket)=>{
 
     //TO4DO: send message
     socket.on("private message", ({content, to}) => {
-        console.log(`message to : ${to} , content: ${content}`)
         // find the socket first
         // socket.to(to).emit("private message", {content, from: socket.userID})
         
         try {
             const receiver = sockets.get(to);
-            receiver.emit("private message", {content, from: socket.userID})
+            receiver.emit("private message", {content, from: {id: socket.userID, username: socket.username}})
+            if(receiver.connected){
+                console.log(`${receiver.userID} is online`)
+            } else {
+                console.log(`${receiver.userID} is offline`)
+            }
         } catch (error) {
             console.log(error)
         }

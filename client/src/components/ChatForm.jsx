@@ -1,27 +1,22 @@
-import React from "react"
-import { useState, useEffect } from "react";
-import "../styles/forms/chatForm.css"
-import { useSelector, useDispatch} from "react-redux";
-import socket from "../services/socket";
-import { updateChatHistory } from "../redux/chat";
+import React from "react";
+import { useState } from "react";
+import "../styles/forms/chatForm.css";
+import { useSelector } from "react-redux";
+import { useMessageSender } from "../customHooks/useMessageSender";
 
 const ChatForm = (props) => {
-  const sender = useSelector(state => state.user)
-  const to = useSelector(state => state.user.userSelected.user)
-  const [message, setMessage] = useState("")
-  const dispatch = useDispatch();
+  const sendMessage = useMessageSender();
+  const sender = useSelector((state) => state.user);
+  const to = useSelector((state) => state.user.userSelected.user);
+  const [message, setMessage] = useState("");
 
 
-  useEffect(()=>{
-  }, [message])
-
-      // handle submit
-      function handleSend(e){
-        e.preventDefault();
-        socket.emit("private message", {content: message, to: to.id});
-        dispatch(updateChatHistory({ sender, receiver: to, message }));
-        setMessage('');
-      }
+  // handle submit
+  function handleSend(e) {
+    e.preventDefault();
+    sendMessage({ sender, receiver: to, message });
+    setMessage("");
+  }
 
   return (
     <div className="chatFormSection">
@@ -32,9 +27,11 @@ const ChatForm = (props) => {
           id="message"
           placeholder="Type a message"
           value={message}
-          onChange={(e)=>setMessage(e.target.value)}
+          onChange={(e) => setMessage(e.target.value)}
         />
-        <button type="submit" className="msg-send-btn" onClick={handleSend}>Send</button>
+        <button type="submit" className="msg-send-btn" onClick={handleSend}>
+          Send
+        </button>
       </form>
     </div>
   );

@@ -3,12 +3,14 @@ import { combineReducers } from '@reduxjs/toolkit'
 import chatReducer from './chat'
 import userReducer from './user'
 import usersReducer from './users'
-import storage from 'redux-persist/lib/storage'
+import storageSession from 'redux-persist/lib/storage/session'
 import {persistReducer, persistStore} from 'redux-persist';
 
 const persistConfig = {
     key: 'root',
-    storage,
+    storage: storageSession,
+    whitelist: ['user'], //only persist user reducer
+    blacklist: ['chat', 'users'] // don't persist chat and users list
 }
 const rootReducer = combineReducers({
     chat: chatReducer, user: userReducer, users: usersReducer
@@ -20,10 +22,3 @@ export const store = configureStore({
 })
 
 export const persistor = persistStore(store);
-// export default configureStore({
-//     reducer: {
-//         chat: chatReducer,
-//         user: userReducer,
-//         users: usersReducer,
-//     }
-// })

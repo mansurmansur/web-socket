@@ -13,7 +13,7 @@ export const usersSlice = createSlice({
             state.activeUsers = [...action.payload]
         },
         getUser: (state, action) => {
-            return state.activeUsers.find(user => user.id === action.payload)
+            return state.activeUsers.filter(user => user.id === action.payload)
         }
     }
 });

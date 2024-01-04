@@ -3,7 +3,7 @@ import "../styles/sideNav/activeUsers.css"
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateActiveUsers } from "../redux/users";
-import { collection, doc, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../services/firebase";
 import Card from "./Card";
 
@@ -27,7 +27,11 @@ const ActiveUsers = (props) => {
         dispatch(updateActiveUsers(users));
       });
 
-    }, []);
+
+      return () => {
+        unsubscribe();
+      }
+    }, [username, dispatch]);
 
 
 
