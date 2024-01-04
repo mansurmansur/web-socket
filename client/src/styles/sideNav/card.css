@@ -1,0 +1,29 @@
+.card{
+    display: flex;
+    padding: 10px;
+    align-Items: center;
+    box-shadow: 0 0 5px #EEEEEE;
+  }
+  .card:hover{
+    background-color: lightgrey;
+    
+  }
+  .card .profile-icon{
+    background: #EEEEEE;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .user-info{
+    margin-left: 10px;
+    padding-bottom: 10px;
+    width: calc(100% - 30px)
+  }.user-info .user-name{
+    margin: 0;
+  }
+  .lastMessage{
+    font-size: .6em;
+    opacity: .6;
+  }

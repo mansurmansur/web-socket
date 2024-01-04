@@ -1,10 +1,12 @@
-const { io } = require("socket.io-client");
-const socket = io("http://localhost:5000");
+import {io} from "socket.io-client";
 
-// send a message to the server
-function sendMessage(messageType, data) {
-    socket.emit(messageType, data);
-}
+const URL = "http://localhost:5000";
+const socket = io(URL, {autoConnect: false});
 
+// test purpose
+socket.onAny((event, ...args)=>{
+    console.log(event)
+    console.log(args)
+})
 
-export {socket, sendMessage};
+export default socket;

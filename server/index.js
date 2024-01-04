@@ -1,68 +1,73 @@
-const {Server} = require('socket.io');
+const { Server } = require("socket.io");
+const {admin, db} = require("./config/firebaseConfig");
 
-const server = new Server(5000, {
+const server = new Server();
+const sockets = new Map ();
+
+//testing purposes only
+// const usersRef = db.collection("users");
+// usersRef.get().then((snapshot) => {
+//     snapshot.forEach((doc) => {
+//         console.log(doc.id, '=>', doc.data());
+//     });
+// }).catch((err) => console.log(err))
+
+//
+server.listen(5000, {
     cors: {
         origin: "*"
     }
-});
+})
 
-// all active users
-const activeUsers = [];
-
-// broadcast the list of active users to all clients
-function broadcastActiveUsers(){
-    const users = activeUsers.map((user) => ({username: user.username, id: user.id}));
-    server.emit("activeUsers", users);
-}
+/// TODO: 
+// what does this meddile ware do?
+// (check if the user has some messages in the queue sent when user was offline)
+// (possible checks the user and then update online status)
+server.use((socket, next) => {
+    // get firebase userInfo
+    const user = socket.handshake.auth.userInfo;
+   if(user){
+    socket.userID = user.id;
+    socket.username = user.username
+    if(!sockets.has(user.id)){
+        sockets.set(user.id, socket); // add the socket to the list
+        console.log("hey")
+    }
+   }
+    next();
+})
 
 //listening for connection
 server.on("connection", (socket)=>{
-    //listen for username
-    socket.on("setUsername", (username) => {
-        // Associate the username with the socket
-        socket.username = username;
+    
+    //TODO: listen for message
 
-        //create an object for the user
-        const user = {
-            id: socket.id,
-            username: socket.username
+    //TO4DO: send message
+    socket.on("private message", ({content, to}) => {
+        // find the socket first
+        // socket.to(to).emit("private message", {content, from: socket.userID})
+        
+        try {
+            const receiver = sockets.get(to);
+            receiver.emit("private message", {content, from: {id: socket.userID, username: socket.username}})
+            if(receiver.connected){
+                console.log(`${receiver.userID} is online`)
+            } else {
+                console.log(`${receiver.userID} is offline`)
+            }
+        } catch (error) {
+            console.log(error)
         }
-
-        //Add the user to activeusers array if not in it
-        const userIndex = activeUsers.findIndex((user) => user.id === socket.id);
-        if(userIndex === -1){
-            activeUsers.push(user);
-
-            //update list of active users
-            broadcastActiveUsers();
-        }
-    });
-
-    // listen for private messages
-    socket.on("privateMessage", (data) => {
-        const {to, message} = data;
-        const toSocket = activeUsers.find((user)=> user.id === to);
-        if(toSocket){
-            //send the private message only to the intended user
-            socket.to(toSocket.id).emit("privateMessage",{from: {id: socket.id, username: socket.username},message })
-        } else {
-            // Handle the case when the recipient is not found
-        }
+        
     })
-    // handle disconnection
-    socket.on("disconnect", () => {
-        // remove the user from the activeUsers array
-        const userIndex = activeUsers.findIndex((user) => user.id === socket.id);
-        if(userIndex !== -1) {
-            activeUsers.splice(userIndex, 1);
-            // broadcast the update list of active users
-            broadcastActiveUsers();
-        }
 
-        // remove the privateMessage event listener for this socket
-        socket.removeAllListeners("privateMessage")
+  
+
+    //TODO: listen for disconnection
+    //on disconnection remove the socket from the socket list
+    socket.on("disconnect", ()=> {
+        if(socket.userID && sockets.has(socket.userID)){
+            sockets.delete(socket.userID);
+        }
     })
 })
-
-
-
