@@ -1,16 +1,19 @@
 const { Server } = require("socket.io");
 const {admin, db} = require("./config/firebaseConfig");
+const {inMemoryMessageStore} = require('./messageStore')
 
 const server = new Server();
+const messageQueue = new inMemoryMessageStore();
 const sockets = new Map ();
+const users = new Map();
 
 //testing purposes only
-// const usersRef = db.collection("users");
-// usersRef.get().then((snapshot) => {
-//     snapshot.forEach((doc) => {
-//         console.log(doc.id, '=>', doc.data());
-//     });
-// }).catch((err) => console.log(err))
+const usersRef = db.collection("users");
+usersRef.get().then((snapshot) => {
+    snapshot.forEach((doc) => {
+        users.set(doc.id, doc.data())
+    });
+}).catch((err) => console.log(err))
 
 //
 server.listen(5000, {
@@ -18,6 +21,13 @@ server.listen(5000, {
         origin: "*"
     }
 })
+
+//broadcast active users
+const broadcast = (socket) => {
+    const activeUsers = Array.from(sockets.keys()).filter(id => id !== socket.userID); 
+    socket.emit("active users", activeUsers);
+}
+
 
 /// TODO: 
 // what does this meddile ware do?
@@ -31,32 +41,48 @@ server.use((socket, next) => {
     socket.username = user.username
     if(!sockets.has(user.id)){
         sockets.set(user.id, socket); // add the socket to the list
-        console.log("hey")
+        
+        //update online status of the user
+        let temp = users.get(user.id);
+
+        //changing status
+        if(temp){
+            temp.isOnline = true;
+            users.set(temp.id, temp)
+            socket.emit("status online", temp.id)
+        }
+
+        //check if there pending messages waiting to be sent
+        const messages = messageQueue.findMessageForUser(user.id);
+        if(messages.length !== 0){
+            messages.forEach(({content, to, from}) => {
+                socket.emit("private message", {content, from})
+            })
+        }
     }
+
+    //emit the list to the user
+    let list = Array.from(users.values()).filter(usr => usr.id !== user.id);
+
+    socket.emit("users", list);
    }
     next();
 })
 
 //listening for connection
 server.on("connection", (socket)=>{
-    
-    //TODO: listen for message
+
 
     //TO4DO: send message
     socket.on("private message", ({content, to}) => {
         // find the socket first
-        // socket.to(to).emit("private message", {content, from: socket.userID})
+        const receiver = sockets.get(to);
         
-        try {
-            const receiver = sockets.get(to);
+        if(receiver !== null && receiver !== undefined){
             receiver.emit("private message", {content, from: {id: socket.userID, username: socket.username}})
-            if(receiver.connected){
-                console.log(`${receiver.userID} is online`)
-            } else {
-                console.log(`${receiver.userID} is offline`)
-            }
-        } catch (error) {
-            console.log(error)
+        } else {
+            //user not online
+            messageQueue.saveMessage({content, to, from: {id: socket.userID, username: socket.username}})
         }
         
     })
@@ -65,9 +91,19 @@ server.on("connection", (socket)=>{
 
     //TODO: listen for disconnection
     //on disconnection remove the socket from the socket list
-    socket.on("disconnect", ()=> {
-        if(socket.userID && sockets.has(socket.userID)){
-            sockets.delete(socket.userID);
+    socket.on("disconnect", () => {
+      if (socket.userID && sockets.has(socket.userID)) {
+        sockets.delete(socket.userID); //remove from the socket list
+
+        //update online status of the user
+        let temp = users.get(socket.userID);
+
+        //changing status
+        if (temp) {
+          temp.isOnline = false;
+          users.set(temp.id, temp);
+          socket.emit("status offline", temp.id);
         }
-    })
+      }
+    });
 })

@@ -14,9 +14,16 @@ const Card = ({user}) => {
   return (
     <div className="card" onClick={handleClick}>
         <FontAwesomeIcon icon={faUser} className="profile-icon" />    
-      <div className="user-info">
-        <p className="user-name">{user.username}</p>
-        <p className="lastMessage">Last message sent</p>
+      <div className="userInfo">
+        <div className="row">
+          <p className="user-name">{user.username}</p>
+          <p className="time">12pm</p>
+        </div>
+        <div className="row">
+          <p className="lastMessage">Last message sent</p>
+          <div className="presenceStatus"></div>
+        </div>
+
       </div>
     </div>
   )

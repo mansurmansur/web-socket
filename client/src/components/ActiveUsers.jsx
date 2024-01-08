@@ -2,37 +2,24 @@ import React from "react"
 import "../styles/sideNav/activeUsers.css"
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateActiveUsers } from "../redux/users";
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../services/firebase";
+import { updateIsOnline } from "../redux/users";
 import Card from "./Card";
+import socket from "../services/socket";
 
 const ActiveUsers = (props) => {
     const dispatch = useDispatch();
-    const username = useSelector(state => state.user.username)
     const activeusers = useSelector(state => state.users.activeUsers)
 
-    useEffect(() => {
-      const usersRef = collection(db, 'users');
-      const unsubscribe = onSnapshot(usersRef, (snapshot) => {
-        const users = [];
-        snapshot.forEach((doc) => {
-          const userData = doc.data();
-
-          //filter out the current user from the active users
-          if(userData.username !== username){
-            users.push(userData)
-          }
-        })
-        dispatch(updateActiveUsers(users));
-      });
-
+    useEffect(()=>{
+      //listen for users presence status
+      socket.on("active users", (users) => {
+        dispatch(updateIsOnline(users))
+      })
 
       return () => {
-        unsubscribe();
+        socket.off("active users");
       }
-    }, [username, dispatch]);
-
+    }, [])
 
 
   return (
