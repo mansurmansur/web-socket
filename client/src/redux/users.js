@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     activeUsers: []
@@ -34,3 +34,9 @@ export const usersSlice = createSlice({
 
 export const {updateActiveUsers, getUser, updateIsOnline } = usersSlice.actions;
 export default usersSlice.reducer
+
+// selector that returns a single user
+export const selectedUserInfo = (userId) => createSelector(
+    [(state) => state.activeUsers, userId],
+    (activeUsers) => activeUsers.find(user => user.id === userId)
+)

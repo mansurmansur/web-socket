@@ -6,7 +6,7 @@ import ChatHistory from "./ChatHistory";
 import ChatForm from "./ChatForm";
 
 const ChatSection = (props) => {
-  const userSelected = useSelector((state) => state.user.userSelected)
+  const userSelected = useSelector((state) => state.userSelected)
 
   return (
     <div className="chatSection">

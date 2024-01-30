@@ -2,13 +2,14 @@ import React from "react"
 import "../styles/sideNav/card.css"
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faUser} from '@fortawesome/free-solid-svg-icons'
-import { updateIsUserSelected } from "../redux/user";
+import { updateIsUserSelectedStatus, updateSelectedUser} from "../redux/userSelected";
 import { useDispatch } from "react-redux";
 
 const Card = ({user}) => {
   const dispatch = useDispatch();
   const handleClick = e => {
-    dispatch(updateIsUserSelected({isUserSelected: true, user: {id: user.id, username: user.username}}))
+    dispatch(updateIsUserSelectedStatus( true))
+    dispatch(updateSelectedUser({id: user.id, username: user.username}))
     
   }
   return (

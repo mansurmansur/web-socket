@@ -11,10 +11,10 @@ const users = new Map();
 const usersRef = db.collection("users");
 usersRef.get().then((snapshot) => {
     snapshot.forEach((doc) => {
-        users.set(doc.id, doc.data())
+        const user = doc.data();
+        users.set(doc.id, {...doc.data(), lastActive: doc.data().lastActive.toDate().toString()})
     });
 }).catch((err) => console.log(err))
-
 //
 server.listen(5000, {
     cors: {
@@ -62,9 +62,11 @@ server.use((socket, next) => {
     }
 
     //emit the list to the user
+   if(users.size > 0){
     let list = Array.from(users.values()).filter(usr => usr.id !== user.id);
 
     socket.emit("users", list);
+   }
    }
     next();
 })

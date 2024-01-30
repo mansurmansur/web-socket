@@ -6,7 +6,7 @@ import Message from "./Message";
 
 const ChatHistory = (props) => {
   const scrollRef = useRef()
-  const userSelected = useSelector((state) => state.user.userSelected.user) 
+  const userSelected = useSelector((state) => state.userSelected.user) 
   const user = useSelector(state => state.user)
   const chatHistory = useSelector(state => state.chat.chatHistory)
 

@@ -19,7 +19,7 @@ const ActiveUsers = (props) => {
       return () => {
         socket.off("active users");
       }
-    }, [])
+    }, [dispatch])
 
 
   return (
